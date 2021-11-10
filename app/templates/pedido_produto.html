@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+{% block body %}
+<!-- Page Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 my-4">
+            <div class="list-group">
+                <a href="/secao/camisa" class="list-group-item">Camisa</a>
+                <a href="/secao/carteira" class="list-group-item">Carteira</a>
+                <a href="/secao/cinto" class="list-group-item">Cinto</a>
+                <a href="/secao/sapatos" class="list-group-item">Sapatos</a>
+            </div>
+        </div>
+        <!-- /.col-lg-3 -->
+        <div class="col-lg-9">
+            <div class="row">
+                {% for produto in camisas %}
+                <div class="col-lg-6">
+                    <div class="card mt-4">
+                        <img class="card-img-top img-fluid"
+                             src="static/image/produto/{{produto.categoria}}/{{produto.foto}}" alt="">
+                    </div>
+                </div>
+                <!-- /.card -->
+                <div class="col-lg-6">
+                    <div class="card card-outline-secondary my-4">
+                        <div class="card-header">
+                            Detalhes do Pedido
+                        </div>
+                        <div class="card-body">
+                            {% from "includes/_formhelpers.html" import render_field %}
+                            <form method="POST" action="/{{produto.categoria}}?pedido={{produto.id}}">
+                                <div class="form-group">
+                                    {{render_field(form.nome, class_="form-control")}}
+                                </div>
+                                <div class="form-group">
+                                    {{render_field(form.telefone, class_="form-control")}}
+                                </div>
+
+                                <div class="form-group">
+                                    {{render_field(form.quantidade, class_="form-control")}}
+                                </div>
+
+                                <div class="form-group">
+                                    {{render_field(form.pedido_local, class_="form-control")}}
+                                </div>
+                                <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- /.card -->
+
+            </div>
+             <!--  
+            {% if x == '' %}
+            <h2 class="mb-4">No recommendation found</h2>
+            {% else%}
+            <h2 class="mb-4">Recommended for you:</h2>
+            <div class="row">
+                {% for produto in x %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card mb-4">
+                        <a href="/{{produto.categoria}}?ver={{produto.id}}">
+                            <div class="card-img-top id_{{produto.id}}"
+                                 style="background: url('static/image/produto/{{produto.categoria}}/{{produto.foto}}'); background-repeat:no-repeat; background-size: cover; height:200px;width:100% "></div>
+                        </a>
+                        <div class="card-body">
+                            <h5><a class="card-title" href="/{{produto.categoria}}?ver={{produto.id}}">{{
+                                produto.produto_nome}}</a></h5>
+                            <h4>৳{{produto.preco}}</h4>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            -->
+        </div>
+        <!-- /.col-lg-9 -->
+
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+{% endblock %}

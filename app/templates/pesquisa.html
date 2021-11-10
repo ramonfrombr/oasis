@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block body %}
+<!-- Page Content -->
+<div class="container">
+    <div class="row">
+        <!-- /.col-lg-3 -->
+        <div class="col-lg-12">
+            {% include 'includes/_flashmsg.html' %}
+            <div class="row">
+                {% for produto in produtos %}
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card mb-4">
+                        <a href="secao/{{produto.categoria}}?ver={{produto.id}}">
+                            <div class="card-img-top"
+                                 style="background: url('static/image/produto/{{produto.categoria}}/{{produto.foto}}'); background-repeat:no-repeat; background-size: cover; height:200px;width:100% "></div>
+                        </a>
+                        <div class="card-body">
+                            <h3><a class="card-title" id="" href="secao/{{produto.categoria}}?ver={{produto.id}}">{{ produto.produto_nome}}</a></h3>
+                            <h4>$24.99</h4>
+                            <span class="text-warning"></span>
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- /.col-lg-9 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends 'pages/layout.html' %}
+
+{% block body %}
+<div id="page-wrapper">
+
+    <div class="row">
+        <div class="col-lg-12">
+
+            <h1 class="page-header">Editar Produto</h1>
+
+            {% include 'includes/_flashmsg.html' %}
+
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+
+                            {% for produto in produto%}
+                            <form role="form" enctype=multipart/form-data class="" action="/editar_produto?id={{produto.id}}"
+                                  method="post">
+
+                                <div class="form-group">
+                                    <label>Nome do Produto</label>
+                                    <input class="form-control" required="required" name="nome" value="{{produto.produto_nome}}" placeholder="Digite um nome">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Preço</label>
+                                    <input class="form-control" required="required" name="preco" value="{{produto.preco}}" placeholder="Digite um preço">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Descrição</label>
+                                    <textarea class="form-control" required="required" name="descrição" rows="3"
+                                              placeholder="Escreva uma descrição para o produto">{{produto.descricao}}</textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Available</label>
+                                    <input class="form-control" required="required" value="{{produto.disponivel}}" name="disponivel" placeholder="Informe se o produto está disponível">
+                                </div>
+
+                                <div class="form-group">
+
+                                    <label>Categoria</label>
+
+                                    <select class="form-control" id="categoria_id" onchange="populateList();"
+                                            name="categoria">
+
+                                        {% if produto.categoria == 'camisa' %}
+                                            <option value="camisa" selected>Camisa</option>
+                                        {% else %}
+                                            <option value="camisa">Camisa</option>
+                                        {% endif %}
+
+                                        {% if produto.categoria == 'carteira' %}
+                                            <option value="carteira" selected>Carteira</option>
+                                        {% else %}
+                                            <option value="carteira">Carteira</option>
+                                        {% endif %}
+
+                                        {% if produto.categoria == 'cinto' %}
+                                            <option value="cinto" selected>Cinto</option>
+                                        {% else %}
+                                            <option value="cinto">Cinto</option>
+                                        {% endif %}
+
+                                        {% if produto.categoria == 'sapatos' %}
+                                            <option value="sapatos" selected>Sapatos</option>
+                                        {% else %}
+                                            <option value="sapatos">Sapatos</option>
+                                        {% endif %}
+                                    </select>
+                                    
+                                </div>
+
+                                {% for produto_caracteristicas in produto_caracteristicas %}
+                                <div class="form-group level-container">
+
+                                    {% if produto.categoria == 'camisa' %}
+
+                                    <label>level for T-shirt</label>
+
+                                    <div class="form-group">
+
+                                        <label class="checkbox-inline active">
+                                            {% if produto_caracteristicas.v_shape == 'yes' %}
+                                            <input type="checkbox" checked name="camisa" value="v_shape">V-Shape
+                                            {% else%}
+                                            <input type="checkbox" name="camisa" value="v_shape">V-Shape
+                                            {% endif %}
+                                        </label>
+
+                                        <label class="checkbox-inline">
+                                            {% if produto_caracteristicas.polo == 'yes' %}
+                                            <input type="checkbox" checked name="camisa" value="polo">Polo T-shirt
+                                            {% else%}
+                                            <input type="checkbox" name="camisa" value="polo">Polo T-shirt
+                                            {% endif %}
+                                        </label>
+
+                                        <label class="checkbox-inline">
+                                            {% if produto_caracteristicas.clean_text == 'yes' %}
+                                            <input type="checkbox" checked name="camisa" value="clean_text">Clean Text
+                                            {% else%}
+                                            <input type="checkbox" name="camisa" value="clean_text">Clean Text
+                                            {% endif %}
+                                        </label>
+
+                                        <label class="checkbox-inline">
+                                            {% if produto_caracteristicas.design == 'yes' %}
+                                            <input type="checkbox" checked name="camisa" value="design">Colorful Design
+                                            {% else%}
+                                            <input type="checkbox" name="camisa" value="design">Colorful Design
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if produto.categoria == 'carteira' %}
+
+                                        <label>Level for Carteira</label>
+
+                                        <div class="form-group">
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.chain == 'yes' %}
+                                                <input type="checkbox" checked name="carteira" value="chain">Chain
+                                                {% else%}
+                                                <input type="checkbox" name="carteira" value="chain">Chain
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.leather == 'yes' %}
+                                                <input type="checkbox" checked name="carteira" value="leather">Leather
+                                                {% else%}
+                                                <input type="checkbox" name="carteira" value="leather">Leather
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.design == 'yes' %}
+                                                <input type="checkbox" checked name="carteira" value="design">Design
+                                                {% else%}
+                                                <input type="checkbox" name="carteira" value="design">Design
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if produto.categoria == 'cinto' %}
+
+                                        <label>Level for Cinto</label>
+
+                                        <div class="form-group">
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.leather == 'yes' %}
+                                                <input type="checkbox" checked name="cinto" value="leather">Leather
+                                                {% else%}
+                                                <input type="checkbox" name="cinto" value="leather">Leather
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.hook == 'yes' %}
+                                                <input type="checkbox" checked name="cinto" value="hook">Hook
+                                                {% else%}
+                                                <input type="checkbox" name="cinto" value="hook">Hook
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.color == 'yes' %}
+                                                <input type="checkbox" checked name="cinto" value="color">Color
+                                                {% else%}
+                                                <input type="checkbox" name="cinto" value="color">Color
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.design == 'yes' %}
+                                                <input type="checkbox" checked name="cinto" value="design">Design
+                                                {% else%}
+                                                <input type="checkbox" name="cinto" value="design">Design
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if produto.categoria == 'sapatos' %}
+
+                                        <label>Level for Sapatos</label>
+
+                                        <div class="form-group">
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.formal == 'yes' %}
+                                                <input type="checkbox" checked name="sapatos" value="formal">Formal
+                                                {% else%}
+                                                <input type="checkbox" name="sapatos" value="formal">Formal
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.converse == 'yes' %}
+                                                <input type="checkbox" checked name="sapatos" value="converse">Converse
+                                                {% else%}
+                                                <input type="checkbox" name="sapatos" value="converse">Converse
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.loafer == 'yes' %}
+                                                <input type="checkbox" checked name="sapatos" value="loafer">Loafer
+                                                {% else%}
+                                                <input type="checkbox" name="sapatos" value="loafer">Loafer
+                                                {% endif %}
+                                            </label>
+
+                                            <label class="checkbox-inline">
+                                                {% if produto_caracteristicas.leather == 'yes' %}
+                                                <input type="checkbox" name="sapatos" checked value="leather">Leather
+                                                {% else%}
+                                                <input type="checkbox" name="sapatos" value="leather">Leather
+                                                {% endif %}
+                                            </label>
+
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+
+                                <div class="form-group">
+                                    <label>Item</label>
+                                    <input class="form-control" required="required" name="item" value="{{produto.item}}" placeholder="Ex: relógio/sapatos">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Código do Produto</label>
+                                    <input class="form-control" required="required" value="{{produto.produto_codigo}}" name="codigo" placeholder="Enter code">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Adicionar Imagem</label>
+                                    <input type="file" name="foto">
+                                </div>
+
+                                <button type="submit" class="btn btn-default">Salvar Alterações</button>
+
+                            </form>
+                            {% endfor %}
+
+                        </div>
+                        <!-- /.col-lg-6 (nested) -->
+                    </div>
+                    <!-- /.row (nested) -->
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+{% endblock %}

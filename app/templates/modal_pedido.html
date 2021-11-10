@@ -1,0 +1,80 @@
+<!-- Modal -->
+<div class="modal order_modal{{produto.id}}" role="document" style="overflow-y: scroll;">
+    <div class="modal-dialog" style="max-width: 90%; margin: 56px auto;">
+        
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-lg-6">
+
+                        <div class="card mb-4">
+                            <img class="card-img-top img-fluid"
+                                 src="static/image/produto/{{produto.categoria}}/{{produto.foto}}" alt="">
+                            <div class="card-body">
+                                <h4 class="card-title">{{produto.produto_nome}}</h4>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="card card-outline-secondary">
+                            <div class="card-header">
+                                Detalhes do Pedido
+                            </div>
+                            <div class="card-body">
+                                {% from "includes/_formhelpers.html" import render_field %}
+                                <form method="POST" action="/secao/camisa">
+
+
+                                    <!--
+                                    <div class="form-group">
+                                        {{render_field(form.produto_id, class_="form-control", value=produto.id)}}
+                                    </div>
+                                    -->
+
+                                    <div class="form-group">
+                                        {{render_field(form.nome, class_="form-control")}}
+                                    </div>
+                                    <div class="form-group">
+                                        {{render_field(form.telefone, class_="form-control")}}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{render_field(form.quantidade, class_="form-control")}}
+                                    </div>
+
+                                    <div class="form-group">
+                                        {{render_field(form.pedido_local, class_="form-control")}}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Confirmar Pedido</button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $(".order_{{produto.id}}").click(function(){
+        $(".order_modal{{produto.id}}").modal({backdrop: true});
+    });
+});
+
+
+
+
+</script>
