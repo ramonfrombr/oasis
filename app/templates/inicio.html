@@ -93,7 +93,7 @@
 				{% for produto in camisa %} {% if produto.categoria == 'camisa' %}
 				<div class="col-lg-3 col-md-4 col-sm-6">
 					<div class="card mb-4">
-						<a href="/{{produto.categoria}}?ver={{produto.id}}">
+						<a href="secao/{{produto.categoria}}?ver={{produto.id}}">
 							<div
 								class="card-img-top id_{{produto.id}}"
 								style="background: url('static/image/produto/{{produto.categoria}}/{{produto.foto}}'); background-repeat:no-repeat; background-size: cover; height:200px;width:100% "
