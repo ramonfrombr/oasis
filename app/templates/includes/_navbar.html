@@ -49,32 +49,71 @@
 				</div>
 			</form>
 		</div>
-		<ul class="navbar-nav ml-auto">
+
+		<ul
+            class="navbar-nav ml-auto"
+            style="display: flex; align-items: center"
+        >
+
+        
+			<li class="nav-item" style="margin-right: 1em;">
+				<a
+                    href="/"
+                    class="nav-link"
+                >
+                    <span class=""><i class="fas fa-shopping-cart"></i></span>
+                </a>
+			</li>
+
 			{% if session.usuario_conectado %}
+
+
 			<li class="nav-item">
-				<a href="/" class="nav-link"><span class=""></span> Início</a>
-			</li>
-			<li class="nav-item">
-				<a href="/perfil?usuario={{session.usuario_id}}" class="nav-link"
-					><span class=""></span>Ramon</a
+				<a
+                    href="/perfil?usuario={{session.usuario_id}}"
+                    class="nav-link"
+                    style="display:flex; align-items:center"
 				>
+                    <i class="fas fa-user"></i>&nbsp;&nbsp;Ramon
+                </a>
 			</li>
+
 			<li class="nav-item">
-				<a href="{{ url_for('autorizar.sair') }}" class="nav-link"><span class=""></span> Sair</a>
+				<a
+                    href="{{ url_for('autorizar.sair') }}"
+                    class="nav-link"
+                    style="display:flex; align-items:center"
+                >
+                    <i class="fas fa-door-open"></i>&nbsp;&nbsp;Sair
+                </a>
 			</li>
+
 			{% else %}
+
+
+
 			<li class="nav-item">
-				<a href="/" class="nav-link"><span class=""></span> Início</a>
-			</li>
-			<li class="nav-item">
-				<a href="{{ url_for('autorizar.inscrever') }}" class="nav-link"
-					><span class=""></span> Inscrever</a
+				<a
+                    href="{{ url_for('autorizar.inscrever') }}"
+                    class="nav-link"
+                    style="display:flex; align-items:center"
 				>
+                    <i class="fas fa-sign-in-alt"></i>&nbsp;&nbsp;Inscrever
+            </a>
 			</li>
+
 			<li class="nav-item">
-				<a href="{{ url_for('autorizar.entrar') }}" class="nav-link"><span class=""></span> Entrar</a>
+				<a
+                    href="{{ url_for('autorizar.entrar') }}"
+                    class="nav-link"
+                    style="display:flex; align-items:center"
+                >
+                <i class="fas fa-door-open"></i>&nbsp;&nbsp;Entrar
+                </a>
 			</li>
+
 			{% endif %}
 		</ul>
+
 	</div>
 </nav>

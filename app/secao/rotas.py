@@ -169,10 +169,6 @@ def camisa():
 
 
 
-
-
-
-
 @bp.route('/carteira', methods=['GET', 'POST'])
 def carteira():
     

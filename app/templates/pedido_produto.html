@@ -18,7 +18,7 @@
                 <div class="col-lg-6">
                     <div class="card mt-4">
                         <img class="card-img-top img-fluid"
-                             src="static/image/produto/{{produto.categoria}}/{{produto.foto}}" alt="">
+                             src="../static/image/produto/{{produto.categoria}}/{{produto.foto}}" alt="">
                     </div>
                 </div>
                 <!-- /.card -->
@@ -29,7 +29,7 @@
                         </div>
                         <div class="card-body">
                             {% from "includes/_formhelpers.html" import render_field %}
-                            <form method="POST" action="/{{produto.categoria}}?pedido={{produto.id}}">
+                            <form method="POST" action="/secao/{{produto.categoria}}?pedido={{produto.id}}">
                                 <div class="form-group">
                                     {{render_field(form.nome, class_="form-control")}}
                                 </div>
