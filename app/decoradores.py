@@ -31,7 +31,7 @@ def admin_conectado(f):
         if 'admin_conectado' in session:
             return f(*args, *kwargs)
         else:
-            return redirect(url_for('admin.admin_entrar'))
+            return redirect(url_for('admin.entrar'))
 
     return wrap
 
@@ -40,7 +40,7 @@ def admin_nao_conectado(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'admin_conectado' in session:
-            return redirect(url_for('admin.admin'))
+            return redirect(url_for('admin.painel'))
         else:
             return f(*args, *kwargs)
 

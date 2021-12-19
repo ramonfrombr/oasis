@@ -1,41 +1,63 @@
-{% extends 'pages/layout.html' %}
+{% extends 'layout.html' %}
+
+
 {% block body %}
-<div id="page-wrapper">
+<div id="page-wrapper" style="margin-top: 100px">
+
+
     <div class="row">
         <div class="col-lg-12">
-            <h1 class="page-header">Add Product</h1>
+            <h1 class="page-header">Adicionar Produto</h1>
             {% include 'includes/_flashmsg.html' %}
         </div>
         <!-- /.col-lg-12 -->
     </div>
+
+
     <!-- /.row -->
     <div class="row">
+
         <div class="col-lg-12">
+
             <div class="panel panel-default">
+
                 <div class="panel-body">
+
                     <div class="row">
+
                         <div class="col-lg-6">
-                            <form role="form" enctype=multipart/form-data class="" action="/admin_add_produto"
+
+                            <form role="form" enctype=multipart/form-data class="" action="{{ url_for('admin.adicionar_produto') }}"
                                   method="post">
+
                                 <div class="form-group">
-                                    <label>Product Name</label>
-                                    <input class="form-control" required="required" name="name" placeholder="Enter name">
+                                    <label>Nome do Produto</label>
+                                    <input class="form-control" required="required" name="nome" placeholder="Digite o nome">
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Price</label>
-                                    <input class="form-control" required="required" name="price" placeholder="Enter price">
+                                    <label>Preço</label>
+                                    <input class="form-control" required="required" name="preco" placeholder="Digite o preço">
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Description</label>
-                                    <textarea class="form-control" required="required" name="description" rows="3"
-                                              placeholder="Write produto description"></textarea>
+                                    <label>Descrição</label>
+                                    <textarea class="form-control" required="required" name="descricao" rows="3"
+                                              placeholder="Escreva uma descrição para o produto"></textarea>
                                 </div>
+
                                 <div class="form-group">
-                                    <label>Available</label>
-                                    <input class="form-control" required="required" name="available" placeholder="Available">
+                                    <label>Disponível</label>
+
+                                    <select class="form-control"  required="required" name="disponivel">
+                                        <option value="1">Sim</option>
+                                        <option value="0">Não</option>
+                                    </select>
                                 </div>
+
+
                                 <div class="form-group">
-                                    <label>Category</label>
+                                    <label>Categoria</label>
                                     <select class="form-control" id="categoria_id" onchange="populateList();"
                                             name="categoria">
                                         <option value="camisa">Camisa</option>
@@ -44,23 +66,30 @@
                                         <option value="sapatos">Sapatos</option>
                                     </select>
                                 </div>
+
+
+
                                 <div class="form-group level-container">
-                                    <label>level for T-shirt</label>
+
+                                    <label>Características para Camisa</label>
+
                                     <div class="form-group">
                                         <label class="checkbox-inline">
-                                            <input type="checkbox" name="camisa" value="v_shape">V-Shape
+                                            <input type="checkbox" name="camisa" value="gola_v">Gola V
                                         </label>
                                         <label class="checkbox-inline">
-                                            <input type="checkbox" name="camisa" value="polo">Polo T-shirt
+                                            <input type="checkbox" name="camisa" value="polo">Camisa Polo
                                         </label>
                                         <label class="checkbox-inline">
-                                            <input type="checkbox" name="camisa" value="clean_text">Clean Text
+                                            <input type="checkbox" name="camisa" value="texto_claro">Texto Claro
                                         </label>
                                         <label class="checkbox-inline">
-                                            <input type="checkbox" name="camisa" value="design">Colorful Design
+                                            <input type="checkbox" name="camisa" value="colorido">Colorido
                                         </label>
                                     </div>
-                                    <label>Level for Carteira</label>
+
+                                    <label>Características para Carteira</label>
+
                                     <div class="form-group">
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="carteira" value="chain">Chain
@@ -72,7 +101,9 @@
                                             <input type="checkbox" name="carteira" value="design">Design
                                         </label>
                                     </div>
-                                    <label>Level for Cinto</label>
+
+                                    <label>Características para Cinto</label>
+
                                     <div class="form-group">
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="cinto" value="leather">Leather
@@ -87,7 +118,9 @@
                                             <input type="checkbox" name="cinto" value="design">Design
                                         </label>
                                     </div>
-                                    <label>Level for Sapatos</label>
+
+                                    <label>Características para Sapatos</label>
+
                                     <div class="form-group">
                                         <label class="checkbox-inline">
                                             <input type="checkbox" name="sapatos" value="formal">Formal
@@ -103,19 +136,24 @@
                                         </label>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
                                     <label>Item</label>
                                     <input class="form-control" required="required" name="item" placeholder="Ex: watch/sapatos">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Product Code</label>
                                     <input class="form-control" required="required" name="code" placeholder="Enter code">
                                 </div>
+
                                 <div class="form-group">
                                     <label>Add Image</label>
                                     <input type="file" required="required" name="picture">
                                 </div>
+
                                 <button type="submit" class="btn btn-default">Submit Button</button>
+
                             </form>
                         </div>
                         <!-- /.col-lg-6 (nested) -->

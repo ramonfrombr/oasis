@@ -277,19 +277,12 @@ INSERT INTO `produto_visita` (`id`, `usuario_id`, `produto_id`, `data`) VALUES
 DROP TABLE IF EXISTS `mensagens`;
 
 CREATE TABLE IF NOT EXISTS `mensagens` (
-  
     `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  
     `conteudo` varchar(255) NOT NULL,
-  
     `autor_id` int(11) NOT NULL,
-  
     `destinatario_id` int(11) NOT NULL,
-
-    CONSTRAINT fk_autor_id FOREIGN KEY (autor_id) REFERENCES usuarios(id) ON update cascade,
-    
-    CONSTRAINT fk_destinatario_id FOREIGN KEY (destinatario_id) REFERENCES usuarios(id) ON update cascade
-
+    CONSTRAINT fk_autor_id FOREIGN KEY (autor_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_destinatario_id FOREIGN KEY (destinatario_id) REFERENCES usuarios(id)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 

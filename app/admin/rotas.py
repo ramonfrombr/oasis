@@ -1,4 +1,15 @@
-from flask import Flask, render_template, flash, redirect, url_for, session, request, logging
+from flask import (
+    Flask,
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    session,
+    request,
+    logging
+)
+
+
 
 from passlib.hash import sha256_crypt
 
@@ -6,12 +17,64 @@ from . import admin as bp
 
 from .. import mysql
 
-from ..decoradores import usuario_conectado, usuario_nao_conectado, admin_conectado, admin_nao_conectado
+from ..decoradores import (
+    admin_conectado,
+    admin_nao_conectado
+)
+
+from ..formularios import LoginAdmin, RegistrarAdmin
+
+from flask_uploads import UploadSet, IMAGES
+
+fotos = UploadSet('photos', IMAGES)
 
 
-@bp.route('/admin_entrar', methods=['GET', 'POST'])
+
+@bp.route('/registrar', methods=['GET', 'POST'])
+def registrar():
+
+    form = RegistrarAdmin(request.form)
+    
+    if request.method == 'POST' and form.validate():
+
+        nome = form.nome.data
+
+        sobrenome = form.sobrenome.data
+
+        email = form.email.data
+
+        telefone = form.telefone.data
+
+        endereco = form.endereco.data
+
+        senha = form.senha.data
+
+        tipo = 'gerente'
+
+        codigo_confirmacao = 0
+
+        senha_hash = sha256_crypt.hash(senha)
+        
+        # Conexão com banco de dados
+        db = mysql.connection.cursor()
+
+        # Selecione usuário a partir do email
+        resultado = db.execute("INSERT INTO admin (nome, sobrenome, email, telefone, endereco, senha, tipo, codigo_confirmacao) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", [nome, sobrenome, email, telefone, endereco, senha_hash, tipo, codigo_confirmacao])
+
+        mysql.connection.commit()
+
+        db.close()
+
+        return redirect(url_for('admin.entrar'))
+    else:
+        return render_template('admin/registrar.html', form=form)
+
+
+@bp.route('/entrar', methods=['GET', 'POST'])
 @admin_nao_conectado
-def admin_entrar():
+def entrar():
+
+    form = LoginAdmin(request.form)
 
     if request.method == 'POST':
 
@@ -49,13 +112,13 @@ def admin_entrar():
                 
                 session['admin_nome'] = nome
 
-                return redirect(url_for('admin'))
+                return redirect(url_for('.painel'))
 
             else:
 
                 flash('Senha incorreta', 'danger')
 
-                return render_template('pages/entrar.html')
+                return render_template('admin/entrar.html', form=form)
 
         else:
 
@@ -64,13 +127,13 @@ def admin_entrar():
             # Close connection
             db.close()
             
-            return render_template('pages/entrar.html')
+            return render_template('admin/entrar.html', form=form)
     
-    return render_template('pages/entrar.html')
+    return render_template('admin/entrar.html', form=form)
 
 
-@bp.route('/admin_sair')
-def admin_sair():
+@bp.route('/sair')
+def sair():
 
     if 'admin_conectado' in session:
         
@@ -78,13 +141,14 @@ def admin_sair():
         
         return redirect(url_for('admin_entrar'))
     
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin.admin'))
 
 
-@bp.route('/admin')
+@bp.route('/painel')
 @admin_conectado
-def admin():
+def painel():
 
+    # Conexão com banco de dados
     db = mysql.connection.cursor()
     
     n_produtos = db.execute("SELECT * FROM produtos")
@@ -96,7 +160,7 @@ def admin():
     n_usuarios = db.execute("SELECT * FROM usuarios")
     
     return render_template(
-        'pages/inicio.html',
+        'admin/painel.html',
         produtos=produtos,
         n_produtos=n_produtos,
         n_pedidos=n_pedidos,
@@ -108,6 +172,7 @@ def admin():
 @admin_conectado
 def pedidos():
 
+    # Conexão com banco de dados
     db = mysql.connection.cursor()
     
     n_produtos = db.execute("SELECT * FROM produtos")
@@ -119,7 +184,7 @@ def pedidos():
     n_usuarios = db.execute("SELECT * FROM usuarios")
     
     return render_template(
-        'pages/todos_pedidos.html',
+        'admin/pedidos.html',
         pedidos=pedidos,
         n_pedidos=n_pedidos,
         n_produtos=n_produtos,
@@ -131,6 +196,7 @@ def pedidos():
 @admin_conectado
 def usuarios():
     
+    # Conexão com banco de dados
     db = mysql.connection.cursor()
     
     n_produtos = db.execute("SELECT * FROM produtos")
@@ -142,7 +208,7 @@ def usuarios():
     usuarios = db.fetchall()
     
     return render_template(
-        'pages/todos_usuarios.html',
+        'admin/usuarios.html',
         usuarios=usuarios,
         n_usuarios=n_usuarios,
         n_pedidos=n_pedidos,
@@ -156,48 +222,44 @@ def adicionar_produto():
 
     if request.method == 'POST':
         
-        name = request.form.get('name')
-        
-        price = request.form['price']
-        
-        description = request.form['description']
-        
-        available = request.form['available']
-        
+        nome = request.form.get('nome')
+        preco = request.form['preco']
+        descricao = request.form['descricao']
+        disponivel = request.form['disponivel']
         categoria = request.form['categoria']
-        
         item = request.form['item']
+        codigo = request.form['codigo']
+        foto = request.files['foto']
         
-        code = request.form['code']
-        
-        file = request.files['picture']
-        
-        if name and price and description and available and categoria and item and code and file:
+        # Se todos os campos forem preenchidos
+        if nome and preco and descricao and disponivel and categoria and item and codigo and foto:
             
-            pic = file.filename
+            # Formata o nome do arquivo
+            nome_arquivo = foto.filename
+            nome_arquivo2 = nome_arquivo.replace("'", "")
+            nome_arquivo3 = nome_arquivo2.replace(" ", "_")
             
-            photo = pic.replace("'", "")
-            
-            picture = photo.replace(" ", "_")
-            
-            if picture.lower().endswith(('.png', '.jpg', '.jpeg')):
+            # Se a extensão do arquivo for permitida
+            if nome_arquivo3.lower().endswith(('.png', '.jpg', '.jpeg')):
+
+                # Tenta salvar a foto em app/static/image/produto
+                salvar_foto = fotos.save(foto, folder=categoria)
                 
-                save_photo = photos.save(file, folder=categoria)
-                
-                if save_photo:
+                if salvar_foto:
                     
-                    # Create Cursor
-                    curs = mysql.connection.cursor()
+                    # Conexão com banco de dados
+                    db = mysql.connection.cursor()
                     
-                    curs.execute("INSERT INTO produtos(pName,price,description,available,categoria,item,pCode,picture)"
+                    db.execute("INSERT INTO produtos(produto_nome,preco,descricao, disponivel,categoria,item,produto_codigo,foto)"
                                  "VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
-                                 (name, price, description, available, categoria, item, code, picture))
+                                 (nome, preco, descricao, disponivel, categoria, item, codigo, nome_arquivo3))
                     
+                    # COMMIT
                     mysql.connection.commit()
                     
-                    produto_id = curs.lastrowid
+                    produto_id = db.lastrowid
                     
-                    curs.execute("INSERT INTO produto_caracteristicas(produto_id)" "VALUES(%s)", [produto_id])
+                    db.execute("INSERT INTO produto_caracteristicas(produto_id)" "VALUES(%s)", [produto_id])
                     
                     if categoria == 'camisa':
 
@@ -209,9 +271,9 @@ def adicionar_produto():
                             
                             query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(field=lev)
                             
-                            curs.execute(query, (yes, produto_id))
+                            db.execute(query, (yes, produto_id))
                             
-                            # Commit cursor
+                            # COMMIT
                             mysql.connection.commit()
                     
                     elif categoria == 'carteira':
@@ -224,9 +286,9 @@ def adicionar_produto():
                             
                             query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(field=lev)
                             
-                            curs.execute(query, (yes, produto_id))
+                            db.execute(query, (yes, produto_id))
                             
-                            # Commit cursor
+                            # COMMIT
                             mysql.connection.commit()
                     
                     elif categoria == 'cinto':
@@ -239,9 +301,9 @@ def adicionar_produto():
 
                             query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(field=lev)
                             
-                            curs.execute(query, (yes, produto_id))
+                            db.execute(query, (yes, produto_id))
                             
-                            # Commit cursor
+                            # COMMIT
                             mysql.connection.commit()
 
                     elif categoria == 'sapatos':
@@ -254,44 +316,32 @@ def adicionar_produto():
 
                             query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(field=lev)
                             
-                            curs.execute(query, (yes, produto_id))
+                            db.execute(query, (yes, produto_id))
                             
-                            # Commit cursor
+                            # COMMIT
                             mysql.connection.commit()
                     else:
-
-                        flash('Product level not fund', 'danger')
-                        
-                        return redirect(url_for('admin_adicionar_produto'))
+                        flash('Categoria de produto não encontrada.', 'danger')
+                        return redirect(url_for('.adicionar_produto'))
                     
-                    # Close Connection
-                    curs.close()
+                    # Fecha Conexão
+                    db.close()
 
-                    flash('Product added successful', 'success')
+                    flash('Produto adicionado. 😄', 'success')
 
-                    return redirect(url_for('admin_adicionar_produto'))
+                    return redirect(url_for('.adicionar_produto'))
 
                 else:
-
-                    flash('Picture not save', 'danger')
-
-                    return redirect(url_for('admin_adicionar_produto'))
-            
+                    flash('Aconteceu um problema e a foto não foi salva. Tente novamente.', 'danger')
+                    return redirect(url_for('.adicionar_produto'))
             else:
-
-                flash('File not supported', 'danger')
-
-                return redirect(url_for('admin_adicionar_produto'))
-        
+                flash('Extensão de arquivo não permitida. Carregue imagens com extensão .png, .jpg, ou .jpeg.', 'danger')
+                return redirect(url_for('.adicionar_produto'))
         else:
-
-            flash('Please fill up all form', 'danger')
-            
-            return redirect(url_for('admin_adicionar_produto'))
-    
+            flash('Por favor, complete todo o formulário. 🧐', 'danger')
+            return redirect(url_for('.adicionar_produto'))
     else:
-
-        return render_template('pages/adicionar_produto.html')
+        return render_template('admin/adicionar_produto.html')
 
 
 @bp.route('/editar_produto', methods=['POST', 'GET'])
@@ -302,59 +352,55 @@ def editar_produto():
         
         produto_id = request.args['id']
         
-        curso = mysql.connection.cursor()
+        # Conexão com banco de dados
+        db = mysql.connection.cursor()
         
-        res = curso.execute("SELECT * FROM produtos WHERE id=%s", (produto_id,))
+        res = db.execute("SELECT * FROM produtos WHERE id=%s", (produto_id,))
         
-        produto = curso.fetchall()
+        produto = db.fetchall()
         
-        curso.execute("SELECT * FROM produto_caracteristicas WHERE produto_id=%s", (produto_id,))
+        db.execute("SELECT * FROM produto_caracteristicas WHERE produto_id=%s", (produto_id,))
         
-        produto_caracteristicas = curso.fetchall()
+        produto_caracteristicas = db.fetchall()
         
         if res:
             
             if request.method == 'POST':
 
-                name = request.form.get('name')
-                
-                price = request.form['price']
-                
-                description = request.form['description']
-                
-                available = request.form['available']
-                
+
+                nome = request.form.get('nome')
+                preco = request.form['preco']
+                descricao = request.form['descricao']
+                disponivel = request.form['disponivel']
                 categoria = request.form['categoria']
-                
                 item = request.form['item']
-                
-                code = request.form['code']
-                
-                file = request.files['picture']
+                codigo = request.form['codigo']
+                foto = request.files['foto']
                 
                 # Create Cursor
-                if name and price and description and available and categoria and item and code and file:
+                if nome and preco and descricao and disponivel and categoria and item and codigo and foto:
                     
-                    pic = file.filename
-                    
-                    photo = pic.replace("'", "")
-                    
-                    picture = photo.replace(" ", "")
-                    
-                    if picture.lower().endswith(('.png', '.jpg', '.jpeg')):
 
-                        file.filename = picture
+                    # Formata o nome do arquivo
+                    nome_arquivo = foto.filename
+                    nome_arquivo2 = nome_arquivo.replace("'", "")
+                    nome_arquivo3 = nome_arquivo2.replace(" ", "_")
+                    
+                    # Se a extensão do arquivo for permitida
+                    if nome_arquivo3.lower().endswith(('.png', '.jpg', '.jpeg')):
+
+                        foto.filename = nome_arquivo3
                         
-                        save_photo = photos.save(file, folder=categoria)
+                        salvar_foto = fotos.save(foto, folder=categoria)
                         
-                        if save_photo:
+                        if salvar_foto:
 
                             # Create Cursor
-                            cur = mysql.connection.cursor()
+                            #cur = mysql.connection.cursor()
 
-                            exe = curso.execute(
-                                "UPDATE produtos SET pName=%s, price=%s, description=%s, available=%s, categoria=%s, item=%s, pCode=%s, picture=%s WHERE id=%s",
-                                (name, price, description, available, categoria, item, code, picture, produto_id))
+                            exe = db.execute(
+                                "UPDATE produtos SET produto_nome=%s, preco=%s, descricao=%s, disponivel=%s, categoria=%s, item=%s, produto_codigo=%s, foto=%s WHERE id=%s",
+                                (nome, preco, descricao, disponivel, categoria, item, codigo, nome_arquivo3, produto_id))
                             
                             if exe:
 
@@ -369,9 +415,9 @@ def editar_produto():
                                         query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(
                                             field=lev)
                                         
-                                        cur.execute(query, (yes, produto_id))
+                                        db.execute(query, (yes, produto_id))
                                         
-                                        # Commit cursor
+                                        # COMMIT
                                         mysql.connection.commit()
                                 
                                 elif categoria == 'carteira':
@@ -385,9 +431,9 @@ def editar_produto():
                                         query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(
                                             field=lev)
 
-                                        cur.execute(query, (yes, produto_id))
+                                        db.execute(query, (yes, produto_id))
 
-                                        # Commit cursor
+                                        # COMMIT
                                         mysql.connection.commit()
 
                                 elif categoria == 'cinto':
@@ -401,9 +447,9 @@ def editar_produto():
                                         query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(
                                             field=lev)
                                         
-                                        cur.execute(query, (yes, produto_id))
+                                        db.execute(query, (yes, produto_id))
 
-                                        # Commit cursor
+                                        # COMMIT
                                         mysql.connection.commit()
 
                                 elif categoria == 'sapatos':
@@ -417,61 +463,56 @@ def editar_produto():
                                         query = 'UPDATE produto_caracteristicas SET {field}=%s WHERE produto_id=%s'.format(
                                             field=lev)
 
-                                        cur.execute(query, (yes, produto_id))
+                                        db.execute(query, (yes, produto_id))
 
-                                        # Commit cursor
+                                        # COMMIT
                                         mysql.connection.commit()
 
                                 else:
+                                    flash('Categoria de produito não encontrada. 🧐', 'danger')
+                                    return redirect(url_for('.adicionar_produto'))
 
-                                    flash('Product level not fund', 'danger')
-
-                                    return redirect(url_for('admin_adicionar_produto'))
-
-                                flash('Product updated', 'success')
-
-                                return redirect(url_for('editar_produto'))
-
+                                flash('Produto atualizado. 😄', 'success')
+                                return redirect(url_for('.editar_produto'))
                             else:
-
-                                flash('Data updated', 'success')
-
-                                return redirect(url_for('editar_produto'))
-
+                                flash('Dados atualizados. 😄', 'success')
+                                return redirect(url_for('.editar_produto'))
                         else:
-
-                            flash('Pic not upload', 'danger')
-
-                            return render_template('pages/editar_produto.html', produto=produto,
-                                                   produto_caracteristicas=produto_caracteristicas)
+                            flash('Aconteceu um problema e a foto não foi salva. Tente novamente.', 'danger')
+                            return render_template(
+                                'admin/editar_produto.html',
+                                produto=produto,
+                                produto_caracteristicas=produto_caracteristicas
+                            )
                     else:
-
-                        flash('File not support', 'danger')
-
-                        return render_template('pages/editar_produto.html', produto=produto,
-                                               produto_caracteristicas=produto_caracteristicas)
+                        flash('Extensão de arquivo não permitida. Carregue imagens com extensão .png, .jpg, ou .jpeg.', 'danger')
+                        return render_template(
+                            'admin/editar_produto.html',
+                            produto=produto,
+                            produto_caracteristicas=produto_caracteristicas
+                        )
 
                 else:
-
-                    flash('Fill all field', 'danger')
-
-                    return render_template('pages/editar_produto.html', produto=produto,
-                                           produto_caracteristicas=produto_caracteristicas)
-
+                    flash('Por favor, complete todo o formulário. 🧐', 'danger')
+                    return render_template(
+                        'admin/editar_produto.html',
+                        produto=produto,
+                        produto_caracteristicas=produto_caracteristicas
+                    )
             else:
-
-                return render_template('pages/editar_produto.html', produto=produto, produto_caracteristicas=produto_caracteristicas)
+                return render_template(
+                    'admin/editar_produto.html',
+                    produto=produto,
+                    produto_caracteristicas=produto_caracteristicas
+                )
         else:
-
-            return redirect(url_for('admin_entrar'))
+            return redirect(url_for('.entrar'))
     else:
-
-        return redirect(url_for('admin_entrar'))
-
+        return redirect(url_for('.entrar'))
 
 
-@bp.route('/developer', methods=['POST', 'GET'])
-def developer():
+@bp.route('/desenvolvedor', methods=['POST', 'GET'])
+def desenvolvedor():
 
     form = DeveloperForm(request.form)
     

@@ -1,4 +1,12 @@
-from wtforms import Form, StringField, TextAreaField, PasswordField, validators, SelectField
+from wtforms import (
+    Form,
+    StringField,
+    TextAreaField,
+    PasswordField,
+    validators,
+    SelectField
+)
+
 from wtforms.fields.html5 import EmailField
 
 
@@ -16,6 +24,76 @@ class LoginForm(Form):
     
     senha = PasswordField('', [validators.length(min=3)],
                              render_kw={'placeholder': 'Senha'})
+
+
+# Create Login Form
+class LoginAdmin(Form): 
+
+    email = StringField(
+        '',
+        [validators.length(min=1)],
+        render_kw={
+            'autofocus': True,
+            'placeholder': 'Email'}
+    )
+    
+    
+    senha = PasswordField('', [validators.length(min=3)],
+                             render_kw={'placeholder': 'Senha'})
+
+
+
+class RegistrarAdmin(Form):
+
+    """
+        `nome`,
+        `sobrenome`,
+        `email`,
+        `telefone`,
+        `endereco`,
+        `senha`,
+        `tipo`,
+        `codigo_confirmacao`
+    """
+
+    nome = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Nome'}
+    )
+
+    sobrenome = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Sobrenome'}
+    )
+
+    
+    email = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Email'}
+    )
+
+    telefone = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Telefone'}
+    )
+
+
+    endereco = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Endereco'}
+    )
+
+
+    senha = StringField(
+        '',
+        render_kw={
+            'placeholder': 'Senha'}
+    )
 
 
 class RegisterForm(Form):
@@ -72,8 +150,6 @@ class OrderForm(Form):  # Create Order Form
     """
     produto_id = StringField(
         '',
-        
-       
     )
 
 

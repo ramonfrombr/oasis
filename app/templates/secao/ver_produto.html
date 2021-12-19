@@ -33,7 +33,7 @@
                             </div>
                             <div class="card-body">
                                 <h3 class="card-title">{{ produto.produto_nome}}</h3>
-                                <h4>${{ produto.preco}}</h4>
+                                <h4>R$ {{ produto.preco}}</h4>
                                 <p class="card-text">{{ produto.descricao}}</p>
                                 <a href="/secao/{{produto.categoria}}?pedido={{produto.id}}" class="btn btn-success">Pedir Agora</a>
                             </div>
@@ -65,7 +65,7 @@
 
                                 <div class="card-body">
                                     <h5><a class="card-title" href="/secao/{{produto.categoria}}?ver={{produto.id}}">{{ produto.produto_nome}}</a></h5>
-                                    <h4>৳{{produto.preco}}</h4>
+                                    <h4>R$ {{produto.preco}}</h4>
                                 </div>
                                 
                             </div>
